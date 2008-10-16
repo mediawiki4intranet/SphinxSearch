@@ -19,11 +19,10 @@ $wgExtensionCredits['specialpage'][] = array(
 require_once ( dirname( __FILE__ ) . "/sphinxapi.php" );
 
 # Host and port on which searchd deamon is tunning
-$wgSphinxSearch_host = 'localhost';
-$wgSphinxSearch_port = 3312;
-
+if (!defined('$wgSphinxSearch_host')) $wgSphinxSearch_host = 'localhost';
+if (!defined('$wgSphinxSearch_port')) $wgSphinxSearch_port = 3312;
 # Main sphinx.conf index to search
-$wgSphinxSearch_index = "wiki_main";
+if (!defined('$wgSphinxSearch_index')) $wgSphinxSearch_index = "wiki_main";
 
 # Default Sphinx search mode
 $wgSphinxSearch_mode = SPH_MATCH_EXTENDED;
