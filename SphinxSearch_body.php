@@ -15,6 +15,47 @@ global $IP;
 require_once($IP.'/includes/SpecialPage.php');
 require_once($IP.'/includes/SearchEngine.php');
 
+function efSphinxSearchGetSearchableCategories($categories){
+	$dbr = &wfGetDB(DB_SLAVE);
+	extract($dbr->tableNames('categorylinks'));
+  
+  $cats=array();
+	$sql = <<<EOT
+SELECT CONCAT('"',cl_to,'"') as title, COUNT(*) as articles_count
+  FROM $categorylinks
+  GROUP BY cl_to
+  HAVING articles_count >= 10
+  ORDER BY articles_count DESC
+  LIMIT 10
+EOT;
+	$res = $dbr->query($sql);
+	$count = $dbr->numRows($res);
+	for ($i = 0; $i < $count; $i++) {
+		$obj = $dbr->fetchObject($res);
+    array_push($cats, $obj->title);
+	}
+  array_push($cats, '""');
+  $cats_in = implode(",",$cats);
+
+	$sql = <<<EOT
+SELECT page_id, page_title FROM page
+WHERE
+    page_title IN ($cats_in)
+    AND page_namespace=14
+EOT;
+	$res = $dbr->query($sql);
+	$count = $dbr->numRows($res);
+	for ($i = 0; $i < $count; $i++) {
+		$obj = $dbr->fetchObject($res);
+    $categories[$obj->page_id]=$obj->page_title;
+	}
+  return true;
+}
+
+global $wgHooks;
+$wgHooks['SphinxSearchGetSearchableCategories'][] = 'efSphinxSearchGetSearchableCategories';
+
+
 class SphinxSearch extends SpecialPage
 {
     function SphinxSearch() {
