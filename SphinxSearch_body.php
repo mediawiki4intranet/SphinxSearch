@@ -390,7 +390,8 @@ class SphinxSearch extends SpecialPage
         $titleObj = SpecialPage::getTitleFor( "SphinxSearch" );
         $kiaction = $titleObj->getLocalUrl();
         $searchField = ($wgDisableInternalSearch ? 'search' : 'sphinxsearch');
-        $qry = $kiaction . "?$searchField={$term}&amp;fulltext=".wfMsg('sphinxSearchButton')."&amp;";
+        $sterm=urlencode($term);
+        $qry = $kiaction . "?$searchField={$sterm}&amp;fulltext=".wfMsg('sphinxSearchButton')."&amp;";
         if ($wgSphinxMatchAll == '1') {
             $qry .= "match_all=1&amp;";
         }
