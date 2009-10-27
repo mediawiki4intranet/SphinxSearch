@@ -15,12 +15,13 @@ global $IP;
 require_once($IP.'/includes/SpecialPage.php');
 require_once($IP.'/includes/SearchEngine.php');
 
-function efSphinxSearchGetSearchableCategories($categories){
-	$dbr = &wfGetDB(DB_SLAVE);
-	extract($dbr->tableNames('categorylinks'));
-  
-  $cats=array();
-	$sql = <<<EOT
+function efSphinxSearchGetSearchableCategories($categories)
+{
+    $dbr = &wfGetDB(DB_SLAVE);
+    extract($dbr->tableNames('categorylinks'));
+
+    $cats=array();
+    $sql = <<<EOT
 SELECT CONCAT('"',cl_to,'"') as title, COUNT(*) as articles_count
   FROM $categorylinks
   GROUP BY cl_to
@@ -28,28 +29,30 @@ SELECT CONCAT('"',cl_to,'"') as title, COUNT(*) as articles_count
   ORDER BY articles_count DESC
   LIMIT 10
 EOT;
-	$res = $dbr->query($sql);
-	$count = $dbr->numRows($res);
-	for ($i = 0; $i < $count; $i++) {
-		$obj = $dbr->fetchObject($res);
-    array_push($cats, $obj->title);
-	}
-  array_push($cats, '""');
-  $cats_in = implode(",",$cats);
+    $res = $dbr->query($sql);
+    $count = $dbr->numRows($res);
+    for ($i = 0; $i < $count; $i++)
+    {
+        $obj = $dbr->fetchObject($res);
+        array_push($cats, $obj->title);
+    }
+    array_push($cats, '""');
+    $cats_in = implode(",",$cats);
 
-	$sql = <<<EOT
+    $sql = <<<EOT
 SELECT page_id, page_title FROM page
 WHERE
     page_title IN ($cats_in)
     AND page_namespace=14
 EOT;
-	$res = $dbr->query($sql);
-	$count = $dbr->numRows($res);
-	for ($i = 0; $i < $count; $i++) {
-		$obj = $dbr->fetchObject($res);
-    $categories[$obj->page_id]=$obj->page_title;
-	}
-  return true;
+    $res = $dbr->query($sql);
+    $count = $dbr->numRows($res);
+    for ($i = 0; $i < $count; $i++)
+    {
+        $obj = $dbr->fetchObject($res);
+        $categories[$obj->page_id]=$obj->page_title;
+    }
+    return true;
 }
 
 global $wgHooks;
@@ -114,9 +117,9 @@ class SphinxSearch extends SpecialPage
         global $wgSphinxTopSearchableCategory;
 
         if ($wgSphinxTopSearchableCategory) {
-          $categories = self::getChildrenCategories($wgSphinxTopSearchableCategory);
+            $categories = self::getChildrenCategories($wgSphinxTopSearchableCategory);
         } else {
-          $categories = array();
+            $categories = array();
         }
         wfRunHooks('SphinxSearchGetSearchableCategories', array(&$categories));
         return $categories;
@@ -232,7 +235,7 @@ class SphinxSearch extends SpecialPage
 
         # prepare for the next search
         if ($found) {
-            self::createNextPageBar($page, $found, $SearchWord, $namespaces);
+            self::createNextPageBar($page, $found, $SearchWord, $namespaces, $categories);
         }
 
         self::createNewSearchForm($SearchWord, $namespaces, $categories);
@@ -344,7 +347,7 @@ class SphinxSearch extends SpecialPage
                 if ($didyoumean) {
                     $wgOut->addhtml(wfMsg('sphinxSearchDidYouMean') .
                         " <b><a href='" .
-                        $this->getActionURL($didyoumean, $namespaces) .
+                        $this->getActionURL($didyoumean, $namespaces, $categories) .
                         "1'>" . $didyoumean . '</a></b>?');
                 }
             }
@@ -412,7 +415,6 @@ class SphinxSearch extends SpecialPage
                                 $wgOut->addHTML("<div style='margin: 0.2em 1em 1em 1em;'>$entry</div>\n");
                             }
                         }
-    
                     }
                     $db->freeResult($res);
                 }
@@ -425,7 +427,7 @@ class SphinxSearch extends SpecialPage
         return $found;
     }
 
-    function getActionURL($term, $namespaces) {
+    function getActionURL($term, $namespaces, $categories) {
         global $wgDisableInternalSearch, $wgSphinxMatchAll;
 
         $titleObj = SpecialPage::getTitleFor( "SphinxSearch" );
@@ -439,15 +441,18 @@ class SphinxSearch extends SpecialPage
         foreach ($namespaces as $ns) {
             $qry .= "ns{$ns}=1&amp;";
         }
+        foreach ($categories as $cat) {
+            $qry .= "cat%5B%5D=$cat&amp;";
+        }
         $qry .= "page=";
 
         return $qry;
     }
 
-    function createNextPageBar($page, $found, $term, $namespaces) {
+    function createNextPageBar($page, $found, $term, $namespaces, $categories) {
         global $wgOut, $wgSphinxSearch_matches;
 
-        $qry = $this->getActionURL($term, $namespaces);
+        $qry = $this->getActionURL($term, $namespaces, $categories);
 
         $display_pages = 10;
         $max_page = ceil($found / $wgSphinxSearch_matches);
