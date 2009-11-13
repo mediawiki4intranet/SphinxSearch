@@ -21,24 +21,31 @@ if (!class_exists('SphinxClient')) {
 }
 
 # Host and port on which searchd deamon is tunning
-#if (!defined('$wgSphinxSearch_host')) $wgSphinxSearch_host = 'localhost';
-#if (!defined('$wgSphinxSearch_port')) $wgSphinxSearch_port = 3312;
+if (!$wgSphinxSearch_host)
+    $wgSphinxSearch_host = 'localhost';
+if (!$wgSphinxSearch_port)
+    $wgSphinxSearch_port = 3312;
 # Main sphinx.conf index to search
-#if (!defined('$wgSphinxSearch_index')) $wgSphinxSearch_index = "wiki_main";
+if (!$wgSphinxSearch_index)
+    $wgSphinxSearch_index = "wiki_main";
 
 # Default Sphinx search mode
-$wgSphinxSearch_mode = SPH_MATCH_EXTENDED;
+if (!$wgSphinxSearch_mode)
+    $wgSphinxSearch_mode = SPH_MATCH_EXTENDED;
 
 # By default, search will return articles that match any of the words in the search
 # To change that to require all words to match by default, uncomment the next line
 #$wgSphinxMatchAll = 1;
 
 # Number of matches to display at once
-$wgSphinxSearch_matches = 10;
+if (!$wgSphinxSearch_matches)
+    $wgSphinxSearch_matches = 10;
 # How many matches searchd will keep in RAM while searching
-$wgSphinxSearch_maxmatches = 1000;
+if (!$wgSphinxSearch_maxmatches)
+    $wgSphinxSearch_maxmatches = 1000;
 # When to stop searching all together (if different from zero)
-$wgSphinxSearch_cutoff = 0;
+if (!is_int($wgSphinxSearch_cutoff))
+    $wgSphinxSearch_cutoff = 0;
 
 # Weights of individual indexed columns. This gives page titles extra weight
 $wgSphinxSearch_weights = array('old_text'=>1, 'page_title'=>100);
@@ -51,7 +58,8 @@ $wgSphinxSearch_weights = array('old_text'=>1, 'page_title'=>100);
 #$wgAjaxExportList[] = 'SphinxSearch::ajaxGetCategoryChildren';
 
 # Web-accessible path to the extension's folder
-$wgSphinxSearchExtPath = '/extensions/SphinxSearch';
+if (!$wgSphinxSearchExtPath)
+    $wgSphinxSearchExtPath = '/extensions/SphinxSearch';
 # Web-accessible path to the folder with SphinxSearch.js file (if different from $wgSphinxSearchExtPath)
 #$wgSphinxSearchJSPath = '';
 
@@ -61,7 +69,8 @@ $wgSphinxSearchExtPath = '/extensions/SphinxSearch';
 # insterface to ASpell
 
 # Should the suggestion mode be enabled?
-$wgSphinxSuggestMode = true;
+if (!is_bool($wgSphinxSuggestMode))
+    $wgSphinxSuggestMode = true;
 
 # Path to where aspell has location and language data files. Leave commented out if unsure
 #$wgSphinxSearchPspellDictionaryDir = "/usr/lib/aspell";
