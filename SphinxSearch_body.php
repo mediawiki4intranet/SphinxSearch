@@ -436,9 +436,7 @@ class SphinxSearch extends SpecialPage
         $searchField = ($wgDisableInternalSearch ? 'search' : 'sphinxsearch');
         $term = urlencode($term);
         $qry = $kiaction . "?$searchField={$term}&amp;fulltext=".wfMsg('sphinxSearchButton')."&amp;";
-        if ($wgSphinxMatchAll == '1') {
-            $qry .= "match_all=1&amp;";
-        }
+        $qry .= "match_all=".($wgSphinxMatchAll ? 1 : 0)."&amp;";
         foreach ($namespaces as $ns) {
             $qry .= "ns{$ns}=1&amp;";
         }
