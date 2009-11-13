@@ -254,6 +254,7 @@ class SphinxSearch extends SpecialPage
 
         # If there's an exact or very near match, jump right there.
         $t = SearchEngine::getNearMatch( $term );
+        wfRunHooks('SphinxSearchGetNearMatch', array(&$term, &$t));
         if( !is_null( $t ) ) {
             $wgOut->redirect( $t->getFullURL() );
             return;
@@ -281,7 +282,7 @@ class SphinxSearch extends SpecialPage
         global $wgOut;
         global $wgSphinxSearch_host,  $wgSphinxSearch_port;
         global $wgSphinxSearch_index, $wgSphinxSearch_matches, $wgSphinxSearch_mode, $wgSphinxSearch_weights;
-        global $wgSphinxSuggestMode,  $wgSphinxMatchAll;
+        global $wgSphinxSuggestMode,  $wgSphinxMatchAll, $wgSphinxSearch_maxmatches, $wgSphinxSearch_cutoff;
 
         $found = 0;
 
@@ -327,7 +328,7 @@ class SphinxSearch extends SpecialPage
         if (isset($wgSphinxSearch_sortby)) {
             $cl->SetSortMode(SPH_SORT_EXTENDED, $wgSphinxSearch_sortby);
         }
-        $cl->SetLimits (($page-1)*$wgSphinxSearch_matches, $wgSphinxSearch_matches);
+        $cl->SetLimits (($page-1)*$wgSphinxSearch_matches, $wgSphinxSearch_matches, $wgSphinxSearch_maxmatches, $wgSphinxSearch_cutoff);
 
         # search all indices
         $res = $cl->Query($search_term, "*");
@@ -433,8 +434,8 @@ class SphinxSearch extends SpecialPage
         $titleObj = SpecialPage::getTitleFor( "SphinxSearch" );
         $kiaction = $titleObj->getLocalUrl();
         $searchField = ($wgDisableInternalSearch ? 'search' : 'sphinxsearch');
-        $sterm=urlencode($term);
-        $qry = $kiaction . "?$searchField={$sterm}&amp;fulltext=".wfMsg('sphinxSearchButton')."&amp;";
+        $term = urlencode($term);
+        $qry = $kiaction . "?$searchField={$term}&amp;fulltext=".wfMsg('sphinxSearchButton')."&amp;";
         if ($wgSphinxMatchAll == '1') {
             $qry .= "match_all=1&amp;";
         }
@@ -493,7 +494,7 @@ class SphinxSearch extends SpecialPage
 
     function createNewSearchForm($SearchWord, $namespaces, $categories) {
         global $wgOut, $wgDisableInternalSearch, $wgSphinxSearch_mode, $wgSphinxMatchAll;
-        global $wgUseAjax, $wgJsMimeType, $wgScriptPath, $wgSphinxSearchExtPath, $wgRequest;
+        global $wgUseAjax, $wgJsMimeType, $wgScriptPath, $wgSphinxSearchExtPath, $wgSphinxSearchJSPath, $wgRequest;
 
         $titleObj = SpecialPage::getTitleFor( "SphinxSearch" );
         $kiAction = $titleObj->getLocalUrl();
@@ -525,10 +526,10 @@ class SphinxSearch extends SpecialPage
             $cat_parents = $wgRequest->getIntArray("cat_parents", array());
             $wgOut->addScript(Skin::makeVariablesScript(array(
                 'sphinxLoadingMsg'      => wfMsg('sphinxLoading'),
-                'wgSphinxSearchExtPath' => $wgSphinxSearchExtPath
+                'wgSphinxSearchExtPath' => ($wgSphinxSearchJSPath ? $wgSphinxSearchJSPath : $wgSphinxSearchExtPath)
             )));
             $wgOut->addScript(
-                "<script type='{$wgJsMimeType}' src='{$wgSphinxSearchExtPath}/SphinxSearch.js'></script>\n"
+                "<script type='{$wgJsMimeType}' src='".($wgSphinxSearchJSPath ? $wgSphinxSearchJSPath : $wgSphinxSearchExtPath)."/SphinxSearch.js'></script>\n"
             );
             $wgOut->addHTML("</div><div style='width:30%; border:1px #eee solid; padding:4px; margin-right:1px; float:left;'>");
             $wgOut->addHTML(wfMsg('sphinxSearchInCategories'));

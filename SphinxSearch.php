@@ -6,7 +6,7 @@ if( !defined( 'MEDIAWIKI' ) ) {
 }
 
 $wgExtensionCredits['specialpage'][] = array(
-    'version'     => '0.6.beta',
+    'version'     => '0.6.1',
     'name'        => 'SphinxSearch',
     'author'      => 'Svemir Brkic, Paul Grinberg',
     'email'       => 'svemir at thirdblessing dot net, gri6507 at yahoo dot com',
@@ -16,7 +16,9 @@ $wgExtensionCredits['specialpage'][] = array(
 
 # this assumes you have copied sphinxapi.php from your Sphinx
 # installation folder to your SphinxSearch extension folder
-require_once ( dirname( __FILE__ ) . "/sphinxapi.php" );
+if (!class_exists('SphinxClient')) {
+  require_once ( dirname( __FILE__ ) . "/sphinxapi.php" );
+}
 
 # Host and port on which searchd deamon is tunning
 #if (!defined('$wgSphinxSearch_host')) $wgSphinxSearch_host = 'localhost';
@@ -33,6 +35,10 @@ $wgSphinxSearch_mode = SPH_MATCH_EXTENDED;
 
 # Number of matches to display at once
 $wgSphinxSearch_matches = 10;
+# How many matches searchd will keep in RAM while searching
+$wgSphinxSearch_maxmatches = 1000;
+# When to stop searching all together (if different from zero)
+$wgSphinxSearch_cutoff = 0;
 
 # Weights of individual indexed columns. This gives page titles extra weight
 $wgSphinxSearch_weights = array('old_text'=>1, 'page_title'=>100);
@@ -46,6 +52,8 @@ $wgSphinxSearch_weights = array('old_text'=>1, 'page_title'=>100);
 
 # Web-accessible path to the extension's folder
 $wgSphinxSearchExtPath = '/extensions/SphinxSearch';
+# Web-accessible path to the folder with SphinxSearch.js file (if different from $wgSphinxSearchExtPath)
+#$wgSphinxSearchJSPath = '';
 
 ##########################################################
 # Use Aspell to suggest possible misspellings. This could be provided via either
