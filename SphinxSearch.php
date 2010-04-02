@@ -55,7 +55,7 @@ $wgSphinxSearch_weights = array('old_text'=>1, 'page_title'=>100);
 
 # If you want sub-categories to be fetched as parent categories are checked,
 # also set $wgUseAjax to true in your LocalSettings file, so that the following can be used:
-#$wgAjaxExportList[] = 'SphinxSearch::ajaxGetCategoryChildren';
+$wgAjaxExportList[] = 'SphinxSearch::ajaxGetCategoryChildren';
 
 # Web-accessible path to the extension's folder
 if (!$wgSphinxSearchExtPath)
@@ -105,5 +105,3 @@ if ($wgSphinxSuggestMode) {
 if ($wgSphinxSuggestMode && $wgSphinxSearchPersonalDictionary) {
    extAddSpecialPage(dirname(__FILE__) . '/SphinxSearch_PersonalDict.php', 'SphinxSearchPersonalDict', 'SphinxSearchPersonalDict');
 }
-
-?>
