@@ -374,8 +374,8 @@ class SphinxSearch extends SpecialPage
                     if ($dbr->numRows($res))
                     {
                         $row = $dbr->fetchRow($res);
-                        $title_obj = Title::newFromID( $doc );
-                        if (is_object($title_obj))
+                        $title_obj = Title::newFromID($doc);
+                        if (is_object($title_obj) && (!method_exists($title_obj, 'userCanReadEx') || $title_obj->userCanReadEx()))
                         {
                             $wiki_title = $title_obj->getPrefixedText();
                             $wiki_path = $title_obj->getPrefixedDBkey();
