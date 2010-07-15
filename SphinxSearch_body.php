@@ -312,7 +312,7 @@ class SphinxSearch extends SpecialPage
         $cl->SetLimits (($page-1)*$wgSphinxSearch_matches, $wgSphinxSearch_matches, $wgSphinxSearch_maxmatches, $wgSphinxSearch_cutoff);
 
         # search all indices
-        $res = $cl->Query($search_term, "*");
+        $res = $cl->Query($search_term, $wgSphinxSearch_index);
 
         # display the results
         if (!$res)
@@ -367,6 +367,8 @@ class SphinxSearch extends SpecialPage
                     "around"          => 15
                 );
 
+                $first_index = explode(",", $wgSphinxSearch_index);
+                $first_index = $first_index[0];
                 foreach ($res["matches"] as $doc => $docinfo)
                 {
                     $sql = "SELECT old_text FROM ".$dbr->tableName('text')." WHERE old_id=".$docinfo['attrs']['old_id'];
@@ -382,7 +384,7 @@ class SphinxSearch extends SpecialPage
                             $wgOut->addWikiText("* <span style='font-size:110%;'>[[:$wiki_path|$wiki_title]]</span>");
                             # uncomment this line to see the weights etc. as HTML comments in the source of the page
                             $wgOut->addHTML("<!-- page_id: ".$doc."\ninfo: ".print_r($docinfo, true)." -->");
-                            $excerpts = $cl->BuildExcerpts(array($row[0]), $wgSphinxSearch_index, $term, $excerpts_opt);
+                            $excerpts = $cl->BuildExcerpts(array($row[0]), $first_index, $term, $excerpts_opt);
                             if (!is_array($excerpts))
                                 $excerpts = array("ERROR: " . $cl->GetLastError());
                             foreach ($excerpts as $entry)
@@ -394,6 +396,8 @@ class SphinxSearch extends SpecialPage
                             }
                         }
                     }
+                    else
+                        $wgOut->addHTML("Broken old_id in Sphinx index: $doc<br />");
                     $dbr->freeResult($res);
                 }
                 $wgOut->addWikiText(sprintf(wfMsg('sphinxSearchEpilogue'), microtime(true) - $start_time));
