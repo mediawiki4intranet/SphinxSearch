@@ -4,23 +4,20 @@
  * SphinxSearch extension code for MediaWiki
  *
  * http://www.mediawiki.org/wiki/Extension:SphinxSearch
+ * http://wiki.4intra.net/Mediawiki4Intranet
  *
  * Developed by Paul Grinberg and Svemir Brkic
+ * Adjusted by Vitaliy Filippov and Stas Fomin
  *
  * Released under GNU General Public License (see http://www.fsf.org/licenses/gpl.html)
- *
  */
-
-global $IP;
-require_once($IP.'/includes/SpecialPage.php');
-require_once($IP.'/includes/SearchEngine.php');
 
 function efSphinxSearchGetSearchableCategories($categories)
 {
     $dbr = &wfGetDB(DB_SLAVE);
     extract($dbr->tableNames('categorylinks'));
 
-    $cats=array();
+    $cats = array();
     $sql = <<<EOT
 SELECT CONCAT('"',cl_to,'"') as title, COUNT(*) as articles_count
   FROM $categorylinks
@@ -54,9 +51,6 @@ EOT;
     }
     return true;
 }
-
-global $wgHooks;
-$wgHooks['SphinxSearchGetSearchableCategories'][] = 'efSphinxSearchGetSearchableCategories';
 
 class SphinxSearch extends SpecialPage
 {
@@ -561,5 +555,3 @@ class SphinxSearch extends SpecialPage
         return htmlspecialchars($s, ENT_QUOTES);
     }
 }
-
-?>

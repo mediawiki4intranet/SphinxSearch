@@ -4,15 +4,13 @@
  * SphinxSearch extension code for MediaWiki
  *
  * http://www.mediawiki.org/wiki/Extension:SphinxSearch
+ * http://wiki.4intra.net/Mediawiki4Intranet
  *
  * Developed by Paul Grinberg and Svemir Brkic
+ * Adjusted by Vitaliy Filippov and Stas Fomin
  *
  * Released under GNU General Public License (see http://www.fsf.org/licenses/gpl.html)
- *
  */
-
-global $IP;
-require_once($IP.'/includes/SpecialPage.php');
 
 class SphinxSearchPersonalDict extends SpecialPage
 {
@@ -70,26 +68,26 @@ class SphinxSearchPersonalDict extends SpecialPage
     function CreateForm($allowed_to_add) {
         global $wgOut;
         global $wgSphinxSearchPersonalDictionary;
-        
+
         $wgOut->addHTML("<form method=post>");
         $wgOut->addHTML("<div style=\"border: thin solid #000000; width:90%;\"><table cellpadding=\"15\" width=\"100%\" cellspacing=\"0\" border=\"0\">");
         $wgOut->addHTML("<tr><td valign=top>");
         $wgOut->addWikiText("<center>'''" . wfMsg('sphinxsearchindictionary') . "'''</center><p>");
         $wgOut->addHTML('<select name="indictionary[]" size="15" multiple="multiple">');
 
-        if (file_exists($wgSphinxSearchPersonalDictionary)) {
+        if (file_exists($wgSphinxSearchPersonalDictionary))
+        {
             $this->readPersonalDictionary($langauge, $numwords, $words);
             sort($words);
 
-				if (sizeof($words)>0) {
-              foreach ($words as $w)
-                  $wgOut->addHTML("<option value='$w'>$w</option>");
-            } else {
+            if (sizeof($words)>0)
+                foreach ($words as $w)
+                    $wgOut->addHTML("<option value='$w'>$w</option>");
+            else
                 $wgOut->addHTML("<option disabled value=''>Dictionary empty</option>");
-            }
-        } else {
-            $wgOut->addHTML("<option disabled value=''>Dictionary not found</option>");
         }
+        else
+            $wgOut->addHTML("<option disabled value=''>Dictionary not found</option>");
 
         $wgOut->addHTML('</select></td><td valign=top>');
         if ($allowed_to_add) {
@@ -110,18 +108,17 @@ class SphinxSearchPersonalDict extends SpecialPage
     }
 
     function getSearchLanguage() {
-      global $wgUser, $wgLanguageCode;
-      
-      // Try to read the default language from $wgUser: 
-      $language = trim($wgUser->getDefaultOption('language'));
+        global $wgUser, $wgLanguageCode;
+        // Try to read the default language from $wgUser:
+        $language = trim($wgUser->getDefaultOption('language'));
 
-      // Use global variable: $wgLanguageCode (from LocalSettings.php) as fallback:
-      if (empty($language)) { $language = trim($wgLanguageCode); }
+        // Use global variable: $wgLanguageCode (from LocalSettings.php) as fallback:
+        if (empty($language)) { $language = trim($wgLanguageCode); }
 
-      // If we still don't have a valid language yet, assume English:
-      if (empty($language)) { $language = 'en'; }
+        // If we still don't have a valid language yet, assume English:
+        if (empty($language)) { $language = 'en'; }
 
-		return $language;
+        return $language;
     }
 
     function builtin_addword($list) {
@@ -130,10 +127,8 @@ class SphinxSearchPersonalDict extends SpecialPage
         global $wgSphinxSearchPspellDictionaryDir;
 
         $language = $this->getSearchLanguage();
-        
-        $pspell_config = pspell_config_create(
-                                $language,
-                                $wgUser->getDefaultOption('variant'));
+
+        $pspell_config = pspell_config_create($language, $wgUser->getDefaultOption('variant'));
         if ($wgSphinxSearchPspellDictionaryDir) {
             pspell_config_data_dir($pspell_config, $wgSphinxSearchPspellDictionaryDir);
             pspell_config_dict_dir($pspell_config, $wgSphinxSearchPspellDictionaryDir);
@@ -142,7 +137,7 @@ class SphinxSearchPersonalDict extends SpecialPage
         if ($wgSphinxSearchPersonalDictionary)
             pspell_config_personal($pspell_config, $wgSphinxSearchPersonalDictionary);
         $pspell_link = pspell_new_config($pspell_config);
-        
+
         $write_needed = false;
         foreach ($list as $word) {
             if ($word == '')
@@ -206,12 +201,13 @@ class SphinxSearchPersonalDict extends SpecialPage
         $lines = explode("\n", file_get_contents($wgSphinxSearchPersonalDictionary));
         foreach ($lines as $line) {
             trim($line);
-            if (preg_match('/\s(\w+)\s(\d+)/', $line, $matches)) {
+            if (preg_match('/\s(\w+)\s(\d+)/', $line, $matches))
+            {
                 $language = $matches[1];
                 $numwords = $matches[2];
-            } else
-                if ($line)
-                    array_push($words, $line);
+            }
+            elseif ($line)
+                array_push($words, $line);
         }
 
         // Make sure that we have a valid value for language if it wasn't in the .pws file:
@@ -220,9 +216,9 @@ class SphinxSearchPersonalDict extends SpecialPage
 
     function deleteFromPersonalDictionary($list) {
         // there is no built in way to delete from the personal dictionary.
-        
+
         $this->readPersonalDictionary($language, $numwords, $words);
-        
+
         $write_needed = false;
         foreach ($list as $w) {
             if ($w == '')
@@ -234,10 +230,8 @@ class SphinxSearchPersonalDict extends SpecialPage
                 $write_needed = true;
             }
         }
-        
+
         if ($write_needed)
             $this->writePersonalDictionary($language, $numwords, $words);
     }
 }
-
-?>

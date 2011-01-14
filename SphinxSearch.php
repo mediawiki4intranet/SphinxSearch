@@ -1,24 +1,31 @@
 <?php
 
-if( !defined( 'MEDIAWIKI' ) ) {
-    echo( "This file is an extension to the MediaWiki software and cannot be used standalone.\n" );
-    die( 1 );
+/**
+ * SphinxSearch extension code for MediaWiki
+ *
+ * http://www.mediawiki.org/wiki/Extension:SphinxSearch
+ * http://wiki.4intra.net/Mediawiki4Intranet
+ *
+ * Developed by Paul Grinberg and Svemir Brkic
+ * Adjusted by Vitaliy Filippov and Stas Fomin
+ *
+ * Released under GNU General Public License (see http://www.fsf.org/licenses/gpl.html)
+ */
+
+if (!defined('MEDIAWIKI'))
+{
+    echo("This file is an extension to the MediaWiki software and cannot be used standalone.\n");
+    die(1);
 }
 
 $wgExtensionCredits['specialpage'][] = array(
     'version'     => '0.6.1',
     'name'        => 'SphinxSearch',
-    'author'      => 'Svemir Brkic, Paul Grinberg',
+    'author'      => 'Svemir Brkic, Paul Grinberg, Vitaliy Filippov, Stas Fomin',
     'email'       => 'svemir at thirdblessing dot net, gri6507 at yahoo dot com',
     'url'         => 'http://www.mediawiki.org/wiki/Extension:SphinxSearch',
     'description' => 'Replace MediaWiki search engine with [http://www.sphinxsearch.com/ Sphinx].'
 );
-
-# this assumes you have copied sphinxapi.php from your Sphinx
-# installation folder to your SphinxSearch extension folder
-if (!class_exists('SphinxClient')) {
-  require_once ( dirname( __FILE__ ) . "/sphinxapi.php" );
-}
 
 # Host and port on which searchd deamon is tunning
 if (!$wgSphinxSearch_host)
@@ -48,7 +55,7 @@ if (!is_int($wgSphinxSearch_cutoff))
     $wgSphinxSearch_cutoff = 0;
 
 # Weights of individual indexed columns. This gives page titles extra weight
-$wgSphinxSearch_weights = array('old_text'=>1, 'page_title'=>100);
+$wgSphinxSearch_weights = array('old_text' => 1, 'page_title' => 100);
 
 # If you want to enable hierarchical category search, specify the top category of your hierarchy here
 #$wgSphinxTopSearchableCategory = 'Subject_areas';
@@ -88,20 +95,27 @@ if (!is_bool($wgSphinxSuggestMode))
 $wgDisableInternalSearch = true;
 $wgDisableSearchUpdate = true;
 $wgSearchType = 'SphinxSearch';
-# Above three lines should be uncommented to make SphinxSearch the default 
+# Above three lines should be uncommented to make SphinxSearch the default
 ##########################################################
 
-if ( !function_exists( 'extAddSpecialPage' ) ) {
-    # Download from http://svn.wikimedia.org/svnroot/mediawiki/trunk/extensions/ExtensionFunctions.php
-    require_once( dirname(__FILE__) . '/ExtensionFunctions.php' );
-}
+$dir = dirname(__FILE__);
 
-extAddSpecialPage( dirname(__FILE__) . '/SphinxSearch_body.php', ($wgDisableInternalSearch ? 'Search' : 'SphinxSearch'), 'SphinxSearch' );
+$wgAutoloadClasses += array(
+    // this assumes you have copied sphinxapi.php from your Sphinx
+    // installation folder to your SphinxSearch extension folder
+    'SphinxClient'              => "$dir/sphinxapi.php",
+    'SphinxSearch_spell'        => "$dir/SphinxSearch_spell.php",
+    'SphinxSearch'              => "$dir/SphinxSearch_body.php",
+    'SphinxSearchPersonalDict'  => "$dir/SphinxSearch_PersonalDict.php",
+);
 
-if ($wgSphinxSuggestMode) {
-    require_once(dirname(__FILE__) . '/SphinxSearch_spell.php');
-}
+$wgSpecialPages[($wgDisableInternalSearch ? 'Search' : 'SphinxSearch')] = 'SphinxSearch';
+$wgSpecialPageGroups['SphinxSearch'] = 'search';
 
-if ($wgSphinxSuggestMode && $wgSphinxSearchPersonalDictionary) {
-   extAddSpecialPage(dirname(__FILE__) . '/SphinxSearch_PersonalDict.php', 'SphinxSearchPersonalDict', 'SphinxSearchPersonalDict');
+$wgHooks['SphinxSearchGetSearchableCategories'][] = 'efSphinxSearchGetSearchableCategories';
+
+if ($wgSphinxSuggestMode && $wgSphinxSearchPersonalDictionary)
+{
+    $wgSpecialPages['SphinxSearchPersonalDict'] = 'SphinxSearchPersonalDict';
+    $wgSpecialPageGroups['SphinxSearchPersonalDict'] = 'search';
 }
