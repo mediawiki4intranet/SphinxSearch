@@ -16,31 +16,7 @@ class SphinxSearchPersonalDict extends SpecialPage
 {
     function SphinxSearchPersonalDict() {
         SpecialPage::SpecialPage("SphinxSearchPersonalDict", 'delete');
-        self::loadMessages();
-        return true;
-    }
-
-    function loadMessages() {
-        static $messagesLoaded = false;
-        global $wgMessageCache;
-        if ($messagesLoaded) {
-            return;
-        }
-        $messagesLoaded = true;
-
-        $allMessages = array(
-            'en' => array(
-                'sphinxsearchpersonaldict' => 'Wiki-specific Sphinx search spellcheck dictionary',
-                'sphinxsearchindictionary' => 'Already in personal dictionary',
-                'sphinxsearchtobeadded'    => 'To be added to personal dictionary',
-                'sphinxsearchnotadded'     => "Word '''%s''' was not added to dictionary because it contained non alphabetic characters",
-                'sphinxsearchcantpersonaldict' => 'You are not allowed to modify the {{SITENAME}} specific dictionary',
-            )
-        );
-
-        foreach ( $allMessages as $lang => $langMessages ) {
-            $wgMessageCache->addMessages( $langMessages, $lang );
-        }
+        wfLoadExtensionMessages('SphinxSearch');
         return true;
     }
 

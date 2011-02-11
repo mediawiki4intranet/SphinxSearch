@@ -113,6 +113,7 @@ $wgSpecialPages[($wgDisableInternalSearch ? 'Search' : 'SphinxSearch')] = 'Sphin
 $wgSpecialPageGroups['SphinxSearch'] = 'search';
 
 $wgHooks['SphinxSearchGetSearchableCategories'][] = 'efSphinxSearchGetSearchableCategories';
+$wgExtensionMessagesFiles['SphinxSearch'] = dirname(__FILE__) . '/SphinxSearch.i18n.php';
 
 if ($wgSphinxSuggestMode && $wgSphinxSearchPersonalDictionary)
 {

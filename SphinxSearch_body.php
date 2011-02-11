@@ -61,39 +61,7 @@ class SphinxSearch extends SpecialPage
             SpecialPage::SpecialPage("Search");
         else
             SpecialPage::SpecialPage("SphinxSearch");
-        self::loadMessages();
-        return true;
-    }
-
-    function loadMessages()
-    {
-        static $messagesLoaded = false;
-        global $wgMessageCache;
-        if ($messagesLoaded)
-            return;
-        $messagesLoaded = true;
-
-        $allMessages = array(
-            'en' => array(
-                'sphinxsearch'             => 'Search Wiki Using Sphinx',
-                'sphinxSearchInNamespaces' => '<p>Search in namespaces:<br>',
-                'sphinxSearchInCategories' => '<p>Search in categories:<br>',
-                'sphinxResultPage'         => 'Result Page:&nbsp;&nbsp;',
-                'sphinxPreviousPage'       => 'Previous',
-                'sphinxNextPage'           => 'Next',
-                'sphinxSearchPreamble'     => "Displaying %d-%d of %d matches for query '''%s''' retrieved in %0.3f sec with following stats:",
-                'sphinxSearchStats'        => "* '''%s''' found %d times in %d documents",
-                'sphinxSearchButton'       => 'Search',
-                'sphinxSearchEpilogue'     => 'Additional database time was %0.3f sec.',
-                'sphinxSearchDidYouMean'   => 'Did you mean',
-                'sphinxMatchAny'           => 'match any word',
-                'sphinxMatchAll'           => 'match all words',
-                'sphinxLoading'            => 'Loading...'
-            )
-        );
-
-        foreach ($allMessages as $lang => $langMessages)
-            $wgMessageCache->addMessages( $langMessages, $lang );
+        wfLoadExtensionMessages('SphinxSearch');
         return true;
     }
 
