@@ -443,7 +443,8 @@ class SphinxSearch extends SpecialPage
         $wgOut->addHTML("<form action='$kiAction' method='GET'>
             <input type='hidden' name='title' value='".self::esc($titleObj)."'>
             <input type='text' name='$searchField' maxlength='100' value='".self::esc($SearchWord)."'>
-            <input type='submit' name='fulltext' value='".self::esc(wfMsg('sphinxSearchButton'))."'>");
+            <input type='submit' name='fulltext' value='".self::esc(wfMsg('sphinxSearchButton'))."'>".
+            '<br style="clear: both" />');
 
         if ($wgSphinxSearch_mode == SPH_MATCH_EXTENDED)
         {
@@ -478,11 +479,12 @@ class SphinxSearch extends SpecialPage
             $wgOut->addScript(
                 "<script type='{$wgJsMimeType}' src='".($wgSphinxSearchJSPath ? $wgSphinxSearchJSPath : $wgSphinxSearchExtPath)."/SphinxSearch.js'></script>\n"
             );
-            $wgOut->addHTML("</div><div style='width:30%; border:1px #eee solid; padding:4px; margin-right:1px; float:left;'>");
+            $wgOut->addHTML('</div>');
+            $wgOut->addHTML('<div style="width:30%; border:1px #eee solid; padding:4px; margin-right:1px; float:left;">');
             $wgOut->addHTML(wfMsg('sphinxSearchInCategories'));
             $wgOut->addHTML(self::getCategoryCheckboxes($all_categories, $categories, '', $cat_parents));
         }
-        $wgOut->addHTML("</div></form><br clear='both'>");
+        $wgOut->addHTML('</div></form><br style="clear: both" />');
 
         # Put a Sphinx label for this search
         $wgOut->addHTML("<div style='text-align:center'>Powered by <a href='http://www.sphinxsearch.com/'>Sphinx</a></div>");
