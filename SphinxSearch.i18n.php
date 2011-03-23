@@ -22,6 +22,7 @@ $messages['en'] = array(
     'sphinxsearchtobeadded'    => 'To be added to personal dictionary',
     'sphinxsearchnotadded'     => "Word '''%s''' was not added to dictionary because it contained non alphabetic characters",
     'sphinxsearchcantpersonaldict' => 'You are not allowed to modify the {{SITENAME}} specific dictionary',
+    'noexactmatch'             => "'''There is no page titled \"\$1\".''' You can [[:\$1|create this page]].",
 );
 
 $messages['ru'] = array(
@@ -44,4 +45,5 @@ $messages['ru'] = array(
     'sphinxsearchtobeadded'    => 'Будет добавлено в личный словарь',
     'sphinxsearchnotadded'     => "Слово '''%s''' не добавлено в словарь потому, что содержит небуквенные символы",
     'sphinxsearchcantpersonaldict' => 'Вам запрещено править словарь проверки орфографии {{SITENAME}}',
+    'noexactmatch'             => "'''Страницы с названием «$1» не существует.''' [[:$1|Создать страницу]].",
 );
