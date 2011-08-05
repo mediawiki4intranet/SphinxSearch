@@ -55,7 +55,7 @@ if (!is_int($wgSphinxSearch_cutoff))
     $wgSphinxSearch_cutoff = 0;
 
 # Weights of individual indexed columns. This gives page titles extra weight
-$wgSphinxSearch_weights = array('old_text' => 1, 'page_title' => 100);
+$wgSphinxSearch_weights = array('category' => 2, 'text' => 1, 'title' => 100);
 
 # If you want to enable hierarchical category search, specify the top category of your hierarchy here
 #$wgSphinxTopSearchableCategory = 'Subject_areas';
