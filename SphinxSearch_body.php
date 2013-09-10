@@ -61,7 +61,6 @@ class SphinxSearch extends SpecialPage
             SpecialPage::SpecialPage("Search");
         else
             SpecialPage::SpecialPage("SphinxSearch");
-        wfLoadExtensionMessages('SphinxSearch');
         return true;
     }
 
@@ -339,7 +338,7 @@ class SphinxSearch extends SpecialPage
                     {
                         $row = $dbr->fetchRow($res);
                         $title_obj = Title::newFromID($doc);
-                        if (is_object($title_obj) && (!method_exists($title_obj, 'userCanReadEx') || $title_obj->userCanReadEx()))
+                        if (is_object($title_obj) && $title_obj->userCan('read'))
                         {
                             $wiki_title = $title_obj->getPrefixedText();
                             $wiki_path = $title_obj->getPrefixedDBkey();
