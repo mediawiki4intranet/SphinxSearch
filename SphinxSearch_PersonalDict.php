@@ -16,7 +16,6 @@ class SphinxSearchPersonalDict extends SpecialPage
 {
     function SphinxSearchPersonalDict() {
         SpecialPage::SpecialPage("SphinxSearchPersonalDict", 'delete');
-        wfLoadExtensionMessages('SphinxSearch');
         return true;
     }
 
